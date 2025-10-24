@@ -1,6 +1,6 @@
 use std::thread;
 use std::time::Duration;
-use sysinfo::{CpuExt, DiskExt, System, SystemExt};
+use sysinfo::{CpuExt, DiskExt, NetworkExt, System, SystemExt};
 
 fn main() {
     let mut sys = System::new_all();
@@ -25,6 +25,7 @@ fn main() {
             used_mem, total_mem, mem_used_percent
         );
 
+        println!("Disk Usage:");
         for disk in sys.disks() {
             let name = disk.name().to_str().unwrap_or("Name not found."); // default if name not found
             let total_space = disk.total_space() / 1024 / 1024 / 1024; // convert disk space to GB
@@ -40,6 +41,17 @@ fn main() {
             println!(
                 "{}: {} GB / {} GB, {:.1}%",
                 name, used_space, total_space, used_space_percent
+            );
+        }
+
+        println!();
+        println!("Network Usage:");
+        for (name, data) in sys.networks() {
+            println!(
+                "{}: received: {} MB, sent: {} MB",
+                name,
+                data.total_received() / 1024 / 1024,
+                data.total_sent() / 1024 / 1024
             );
         }
 
