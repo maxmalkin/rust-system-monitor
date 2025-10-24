@@ -17,6 +17,7 @@ fn main() {
 
         let used_mem = sys.used_memory() / 1024 / 1024;
         let total_mem = sys.total_memory() / 1024 / 1024;
+        // cast memory to float to calculate percentage accurately
         let mem_used_percent = (used_mem as f64 / total_mem as f64) * 100.0;
 
         println!(
