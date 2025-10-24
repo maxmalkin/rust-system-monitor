@@ -18,7 +18,7 @@ fn main() {
         let used_mem = sys.used_memory() / 1024 / 1024;
         let total_mem = sys.total_memory() / 1024 / 1024;
         // cast memory to float to calculate percentage accurately
-        let mem_used_percent = (used_mem as f64 / total_mem as f64) * 100.0;
+        let mem_used_percent = (used_mem as f64 / total_mem as f64) * 100.0; // has to be 100.0, cannot multiply f64 by int
 
         println!(
             "Memory: {} MB / {} MB, {:.1}%",
@@ -30,15 +30,16 @@ fn main() {
             let total_space = disk.total_space() / 1024 / 1024 / 1024; // convert disk space to GB
             let available_space = disk.available_space() / 1024 / 1024 / 1024;
             let used_space = total_space - available_space;
-            if total_space > 0 {
-                let used_space_percent = (used_space as f64 / total_space as f64) * 100;
+            // equivalent to a ternary
+            let used_space_percent = if total_space > 0 {
+                (used_space as f64 / total_space as f64) * 100.0
             } else {
-                let used_space_percent = 0;
-            }
+                0.0
+            };
 
             println!(
                 "{}: {} GB / {} GB, {:.1}%",
-                name, used_space, total_space, used_space, used_space_percent
+                name, used_space, total_space, used_space_percent
             );
         }
 
