@@ -50,12 +50,12 @@ fn main() {
             println!(
                 "{}: received: {} MB, sent: {} MB",
                 name,
-                data.total_received() / 1024 / 1024,
-                data.total_sent() / 1024 / 1024
+                data.total_received() / 1024, // convert to KB, since MB is too large
+                data.total_transmitted() / 1024
             );
         }
 
-        // update every 1 second.
+        // update every 1 second
         thread::sleep(Duration::from_secs(1));
     }
 }
