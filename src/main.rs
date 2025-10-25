@@ -14,21 +14,22 @@ use sysinfo::{CpuExt, DiskExt, NetworkExt, ProcessExt, System, SystemExt};
 #[command(about = "Simple system monitor")]
 #[command(version)]
 struct Config {
-
-	// update interval in millis
+    // update interval in millis
     #[arg(short, long, default_value = "200")]
-    interval: u64;
+    interval: u64,
 
-	// dont show network usage
-	#[arg(long)]
-	no_network: bool;
+    // dont show network usage
+    #[arg(long)]
+    no_network: bool,
 
-	// dont show disk usage
-	#[arg(long)]
-	no_disk: bool;
+    // dont show disk usage
+    #[arg(long)]
+    no_disk: bool,
 }
 
 fn main() -> Result<()> {
+    let config = Config::parse();
+
     let mut sys = System::new_all();
     let mut stdout = stdout();
 
@@ -62,50 +63,50 @@ fn main() -> Result<()> {
 
         // if not disabled by flag
         if !config.no_disk {
-	        println!();
-	        println!("Disk Usage:");
-	        println!(
-	            "  {:<20} {:>10} {:>10} {:>8}",
-	            "Device", "Used", "Total", "Usage"
-	        );
-	        println!(
-	            "  {:<20} {:>10} {:>10} {:>8}",
-	            "------", "----", "-----", "-----"
-	        );
+            println!();
+            println!("Disk Usage:");
+            println!(
+                "  {:<20} {:>10} {:>10} {:>8}",
+                "Device", "Used", "Total", "Usage"
+            );
+            println!(
+                "  {:<20} {:>10} {:>10} {:>8}",
+                "------", "----", "-----", "-----"
+            );
 
-	        for disk in sys.disks() {
-	            let name = disk.name().to_str().unwrap_or("Unknown");
-	            let total_space = disk.total_space() / 1024 / 1024 / 1024; // convert to GB
-	            let available_space = disk.available_space() / 1024 / 1024 / 1024;
-	            let used_space = total_space - available_space;
-	            let used_space_percent = if total_space > 0 {
-	                (used_space as f64 / total_space as f64) * 100.0 // cast to f64 to get accurate percentage
-	            } else {
-	                0.0
-	            };
+            for disk in sys.disks() {
+                let name = disk.name().to_str().unwrap_or("Unknown");
+                let total_space = disk.total_space() / 1024 / 1024 / 1024; // convert to GB
+                let available_space = disk.available_space() / 1024 / 1024 / 1024;
+                let used_space = total_space - available_space;
+                let used_space_percent = if total_space > 0 {
+                    (used_space as f64 / total_space as f64) * 100.0 // cast to f64 to get accurate percentage
+                } else {
+                    0.0
+                };
 
-	            println!(
-	                "  {:<20} {:>7} GB {:>7} GB {:>6.1}%",
-	                name, used_space, total_space, used_space_percent
-	            );
-	        }
+                println!(
+                    "  {:<20} {:>7} GB {:>7} GB {:>6.1}%",
+                    name, used_space, total_space, used_space_percent
+                );
+            }
         }
 
         // if not disabled by flag
-	    if !config.no_network {
-	        println!();
-	        println!("Network Usage:");
-	        println!("  {:<15} {:>12} {:>12}", "Interface", "Received", "Sent");
-	        println!("  {:<15} {:>12} {:>12}", "---------", "--------", "----");
-	        for (name, data) in sys.networks() {
-	            println!(
-	                "  {:<15} {:>9} KB {:>9} KB",
-	                name,
-	                data.total_received() / 1024, // convert to KB, since MB is too large
-	                data.total_transmitted() / 1024
-	            );
-	        }
-	    }
+        if !config.no_network {
+            println!();
+            println!("Network Usage:");
+            println!("  {:<15} {:>12} {:>12}", "Interface", "Received", "Sent");
+            println!("  {:<15} {:>12} {:>12}", "---------", "--------", "----");
+            for (name, data) in sys.networks() {
+                println!(
+                    "  {:<15} {:>9} KB {:>9} KB",
+                    name,
+                    data.total_received() / 1024, // convert to KB, since MB is too large
+                    data.total_transmitted() / 1024
+                );
+            }
+        }
 
         println!();
         println!("Most Used (CPU):");
