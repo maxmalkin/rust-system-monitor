@@ -56,6 +56,27 @@ fn main() {
             );
         }
 
+        println!();
+        println!("Most Used (CPU):");
+        // take all processes and put them into mutable array
+        let mut processes: Vec<_> = sys.processes().iter().collect();
+        // sort by usage, |a, b| is like a lambda function, partial_cmp compares floats
+        processes.sort_by(|a, b| {
+            b.1.cpu_usage()
+                .partial_cmp(&a.1.cpu_usage())
+                .unwrap_or(std::cmp::Ordering::Equal)
+        });
+
+        // take top 5 by usage
+        for process in processes.iter().take(5) {
+            println!(
+                "{}: {:.1}% CPU, {} MB RAM",
+                process.name(),
+                process.cpu_usage(),
+                process.memory() / 1024 / 1024
+            );
+        }
+
         // update every 1 second
         thread::sleep(Duration::from_secs(1));
     }
