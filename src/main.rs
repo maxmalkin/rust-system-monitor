@@ -25,6 +25,7 @@ fn main() {
             used_mem, total_mem, mem_used_percent
         );
 
+        println!();
         println!("Disk Usage:");
         for disk in sys.disks() {
             let name = disk.name().to_str().unwrap_or("Name not found."); // default if name not found
@@ -48,7 +49,7 @@ fn main() {
         println!("Network Usage:");
         for (name, data) in sys.networks() {
             println!(
-                "{}: received: {} MB, sent: {} MB",
+                "{}: received: {} KB, sent: {} KB",
                 name,
                 data.total_received() / 1024, // convert to KB, since MB is too large
                 data.total_transmitted() / 1024
