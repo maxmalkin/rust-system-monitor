@@ -22,46 +22,58 @@ fn main() -> Result<()> {
         // move cursor to start
         execute!(stdout, MoveTo(0, 0))?; // ? used to throw an error
 
-        println!("Monitor Running...");
+        println!("--- SYSTEM MONITOR RUNNING ---");
         println!("\r"); // ensure full overwrite of previous line
 
         // format usage to one decimal place
-        println!("CPU Usage: {:.1}%", sys.global_cpu_info().cpu_usage());
+        println!(
+            "  CPU Usage:    {:>6.1}%",
+            sys.global_cpu_info().cpu_usage()
+        );
         let used_mem = sys.used_memory() / 1024 / 1024;
         let total_mem = sys.total_memory() / 1024 / 1024;
         // cast memory to float to calculate percentage accurately
         let mem_used_percent = (used_mem as f64 / total_mem as f64) * 100.0; // has to be 100.0, cannot multiply f64 by int
 
         println!(
-            "Memory: {} MB / {} MB, {:.1}%",
+            "  Memory Usage:       {:>6} MB / {:>6} MB ({:>5.1}%)",
             used_mem, total_mem, mem_used_percent
         );
 
         println!();
         println!("Disk Usage:");
+        println!(
+            "  {:<20} {:>10} {:>10} {:>8}",
+            "Device", "Used", "Total", "Usage"
+        );
+        println!(
+            "  {:<20} {:>10} {:>10} {:>8}",
+            "------", "----", "-----", "-----"
+        );
         for disk in sys.disks() {
-            let name = disk.name().to_str().unwrap_or("Name not found."); // default if name not found
-            let total_space = disk.total_space() / 1024 / 1024 / 1024; // convert disk space to GB
+            let name = disk.name().to_str().unwrap_or("Unknown");
+            let total_space = disk.total_space() / 1024 / 1024 / 1024; // convert to GB
             let available_space = disk.available_space() / 1024 / 1024 / 1024;
             let used_space = total_space - available_space;
-            // equivalent to a ternary
             let used_space_percent = if total_space > 0 {
-                (used_space as f64 / total_space as f64) * 100.0
+                (used_space as f64 / total_space as f64) * 100.0 // cast to f64 to get accurate percentage
             } else {
                 0.0
             };
 
             println!(
-                "{}: {} GB / {} GB, {:.1}%",
+                "  {:<20} {:>7} GB {:>7} GB {:>6.1}%",
                 name, used_space, total_space, used_space_percent
             );
         }
 
         println!();
         println!("Network Usage:");
+        println!("  {:<15} {:>12} {:>12}", "Interface", "Received", "Sent");
+        println!("  {:<15} {:>12} {:>12}", "---------", "--------", "----");
         for (name, data) in sys.networks() {
             println!(
-                "{}: received: {} KB, sent: {} KB",
+                "  {:<15} {:>9} KB {:>9} KB",
                 name,
                 data.total_received() / 1024, // convert to KB, since MB is too large
                 data.total_transmitted() / 1024
@@ -70,6 +82,8 @@ fn main() -> Result<()> {
 
         println!();
         println!("Most Used (CPU):");
+        println!("  {:<25} {:>8} {:>10}", "Process", "CPU", "Memory");
+        println!("  {:<25} {:>8} {:>10}", "-------", "---", "------");
         // take all processes and put them into mutable array
         let mut processes: Vec<_> = sys.processes().iter().collect();
         // sort by usage, |a, b| is like a lambda function, partial_cmp compares floats
@@ -82,9 +96,16 @@ fn main() -> Result<()> {
         // take top 5 by usage
         // destructure and dereference process tuple with & and _
         for &(_, process) in processes.iter().take(5) {
+            // truncate long names
+            let name = if process.name().len() > 25 {
+                format!("{}...", &process.name()[..22])
+            } else {
+                process.name().to_string()
+            };
+
             println!(
-                "{}: {:.1}%, {} MB",
-                process.name(),
+                "  {:<25} {:>6.1}% {:>7} MB",
+                name,
                 process.cpu_usage(),
                 process.memory() / 1024 / 1024
             );
