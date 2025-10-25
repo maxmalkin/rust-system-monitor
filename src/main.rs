@@ -172,11 +172,11 @@ fn main() -> Result<()> {
             let cpu_avg = history.cpu_avg().unwrap_or(0.0);
             let cpu_max = history.cpu_max().unwrap_or(0.0);
             println!(
-                "  CPU Usage:    {:>6.1}%, {}",
+                "  CPU Usage:    {:.1}%, {}",
                 sys.global_cpu_info().cpu_usage(),
                 cpu_trend,
             );
-            println!("avg: {:.1}%, peak: {:.1}%)", cpu_avg, cpu_max);
+            println!("		avg: {:.1}%, peak: {:.1}%", cpu_avg, cpu_max);
         }
 
         let used_mem = sys.used_memory() / 1024 / 1024;
@@ -185,13 +185,13 @@ fn main() -> Result<()> {
         let mem_used_percent = (used_mem as f64 / total_mem as f64) * 100.0; // has to be 100.0, cannot multiply f64 by int
         let mem_trend = history.mem_trend();
         println!(
-            "  Memory Usage:       {:>6} MB / {:>6} MB ({:>5.1}%), {}",
+            "  Memory Usage:       {} MB / {:>3} MB ({:.1}%), {}",
             used_mem, total_mem, mem_used_percent, mem_trend
         );
 
         let mem_avg = history.mem_avg().unwrap_or(0.0);
         let mem_max = history.mem_max().unwrap_or(0.0);
-        println!("avg: {:.1}%, peak: {:.1}%)", mem_avg, mem_max);
+        println!("		avg: {:.1}%, peak: {:.1}%", mem_avg, mem_max);
 
         // if not disabled by flag
         if !config.no_disk {
