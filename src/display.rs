@@ -1,8 +1,8 @@
+use std::io::{Write, Result};
+use sysinfo::{System, SystemExt, DiskExt, NetworkExt, ProcessExt};
 use crate::config::Config;
 use crate::history::HistoryTracker;
 use crate::monitor::SystemData;
-use std::io::{Result, Write};
-use sysinfo::{DiskExt, NetworkExt, ProcessExt, System, SystemExt};
 
 pub fn display_header() {
     println!("--- SYSTEM MONITOR RUNNING ---");
@@ -15,7 +15,11 @@ pub fn display_cpu_info(data: &SystemData, history: &HistoryTracker) {
         let cpu_avg = history.cpu_avg().unwrap_or(0.0);
         let cpu_max = history.cpu_max().unwrap_or(0.0);
 
-        println!("  CPU Usage:    {:>6.1}%, {}", data.cpu_usage, cpu_trend,);
+        println!(
+            "  CPU Usage:    {:>6.1}%, {}",
+            data.cpu_usage,
+            cpu_trend,
+        );
         println!("avg: {:.1}%, peak: {:.1}%)", cpu_avg, cpu_max);
     } else {
         println!("  CPU Usage:    {:>6.1}%", data.cpu_usage);

@@ -4,11 +4,8 @@ mod history;
 mod monitor;
 
 use clap::Parser;
-use crossterm::{
-    cursor::{Hide, MoveTo},
-    execute,
-    terminal::{Clear, ClearType},
-};
+use crossterm::cursor::Hide;
+use crossterm::execute;
 use std::io::{stdout, Result, Write};
 use std::thread;
 use std::time::Duration;
@@ -26,20 +23,22 @@ fn main() -> Result<()> {
     let mut stdout = stdout();
     let mut history = HistoryTracker::new(10);
 
-    execute!(stdout, Hide, Clear(ClearType::All))?;
+    execute!(stdout, Hide)?;
 
     loop {
         sys.refresh_all();
-        execute!(stdout, MoveTo(0, 0))?;
 
-        // get system info
+        // Use the original approach that was working
+        print!("\x1B[2J\x1B[1;1H");
+
+        // Collect system data
         let system_data = collect_system_data(&sys);
 
-        // add to history
+        // Add to history
         let history_data = system_data_to_history(&system_data);
         history.add(history_data);
 
-        // display everything
+        // Display everything - no stdout parameter needed
         display_header();
         display_cpu_info(&system_data, &history);
         display_memory_info(&system_data, &history);
