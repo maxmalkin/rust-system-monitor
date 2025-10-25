@@ -2,6 +2,7 @@ mod config;
 mod display;
 mod history;
 mod monitor;
+mod rates;
 
 use clap::Parser;
 use crossterm::cursor::Hide;
