@@ -1,6 +1,6 @@
 use std::thread;
 use std::time::Duration;
-use sysinfo::{CpuExt, DiskExt, NetworkExt, System, SystemExt};
+use sysinfo::{CpuExt, DiskExt, NetworkExt, ProcessExt, System, SystemExt};
 
 fn main() {
     let mut sys = System::new_all();
@@ -68,7 +68,8 @@ fn main() {
         });
 
         // take top 5 by usage
-        for process in processes.iter().take(5) {
+        // destructure and dereference process tuple with & and _
+        for &(_, process) in processes.iter().take(5) {
             println!(
                 "{}: {:.1}% CPU, {} MB RAM",
                 process.name(),
