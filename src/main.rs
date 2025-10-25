@@ -8,7 +8,7 @@ use std::thread;
 use std::time::Duration;
 use sysinfo::{CpuExt, DiskExt, NetworkExt, ProcessExt, System, SystemExt};
 
-fn main() {
+fn main() -> crossterm::Result<()> {
     let mut sys = System::new_all();
     let mut stdout = stdout();
 
