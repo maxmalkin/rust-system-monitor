@@ -113,6 +113,6 @@ fn main() -> Result<()> {
 
         stdout.flush()?;
         // update every 1 second
-        thread::sleep(Duration::from_secs(1));
+        thread::sleep(Duration::from_millis(100));
     }
 }
