@@ -83,7 +83,7 @@ fn main() -> Result<()> {
         // destructure and dereference process tuple with & and _
         for &(_, process) in processes.iter().take(5) {
             println!(
-                "{}: {:.1}% CPU, {} MB RAM",
+                "{}: {:.1}%, {} MB",
                 process.name(),
                 process.cpu_usage(),
                 process.memory() / 1024 / 1024
