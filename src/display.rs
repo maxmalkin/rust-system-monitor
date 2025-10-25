@@ -1,6 +1,6 @@
-use crate::modules::config::Config;
-use crate::modules::history::HistoryTracker;
-use crate::modules::monitor::SystemData;
+use crate::config::Config;
+use crate::history::HistoryTracker;
+use crate::monitor::SystemData;
 use std::io::{Result, Write};
 use sysinfo::{DiskExt, NetworkExt, ProcessExt, System, SystemExt};
 

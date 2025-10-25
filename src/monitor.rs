@@ -1,4 +1,4 @@
-use crate::modules::history::History;
+use crate::history::History;
 use sysinfo::{CpuExt, System, SystemExt};
 
 pub struct SystemData {
