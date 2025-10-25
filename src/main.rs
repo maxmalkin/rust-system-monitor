@@ -1,3 +1,4 @@
+use clap::Parser;
 use crossterm::{
     cursor::{Hide, MoveTo},
     execute,
@@ -7,6 +8,25 @@ use std::io::{stdout, Result, Write};
 use std::thread;
 use std::time::Duration;
 use sysinfo::{CpuExt, DiskExt, NetworkExt, ProcessExt, System, SystemExt};
+
+#[derive(Parser, Debug)]
+#[command(name = "rust-system-monitor")]
+#[command(about = "Simple system monitor")]
+#[command(version)]
+struct Config {
+
+	// update interval in millis
+    #[arg(short, long, default_value = "200")]
+    interval: u64;
+
+	// dont show network usage
+	#[arg(long)]
+	no_network: bool;
+
+	// dont show disk usage
+	#[arg(long)]
+	no_disk: bool;
+}
 
 fn main() -> Result<()> {
     let mut sys = System::new_all();
