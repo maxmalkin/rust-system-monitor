@@ -1,11 +1,11 @@
+use crossterm::{
+    cursor::{Hide, MoveTo, Show},
+    execute,
+    terminal::{Clear, ClearType},
+};
+use std::io::{stdout, Write};
 use std::thread;
 use std::time::Duration;
-use crossterm::{
-	cursor::{MoveTo, Hide, Show},
-	execute,
-	terminal::{Clear, ClearType},
-}
-use std::io::{stdout, Write};
 use sysinfo::{CpuExt, DiskExt, NetworkExt, ProcessExt, System, SystemExt};
 
 fn main() {
@@ -20,7 +20,7 @@ fn main() {
         sys.refresh_all();
 
         // move cursor to start
-        execute!(stdout, MoveTo(0,0))?; // ? used to throw an error
+        execute!(stdout, MoveTo(0, 0))?; // ? used to throw an error
 
         println!("Monitor Running...");
         println!("\r"); // ensure full overwrite of previous line
