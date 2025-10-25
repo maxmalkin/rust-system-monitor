@@ -3,12 +3,12 @@ use crossterm::{
     execute,
     terminal::{Clear, ClearType},
 };
-use std::io::{stdout, Write};
+use std::io::{stdout, Result, Write};
 use std::thread;
 use std::time::Duration;
 use sysinfo::{CpuExt, DiskExt, NetworkExt, ProcessExt, System, SystemExt};
 
-fn main() -> crossterm::Result<()> {
+fn main() -> Result<()> {
     let mut sys = System::new_all();
     let mut stdout = stdout();
 
@@ -94,7 +94,4 @@ fn main() -> crossterm::Result<()> {
         // update every 1 second
         thread::sleep(Duration::from_secs(1));
     }
-
-    execute!(stdout, Show)?; // show cursor again when we exit
-    Ok(())
 }
