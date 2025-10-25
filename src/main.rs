@@ -60,45 +60,52 @@ fn main() -> Result<()> {
             used_mem, total_mem, mem_used_percent
         );
 
-        println!();
-        println!("Disk Usage:");
-        println!(
-            "  {:<20} {:>10} {:>10} {:>8}",
-            "Device", "Used", "Total", "Usage"
-        );
-        println!(
-            "  {:<20} {:>10} {:>10} {:>8}",
-            "------", "----", "-----", "-----"
-        );
-        for disk in sys.disks() {
-            let name = disk.name().to_str().unwrap_or("Unknown");
-            let total_space = disk.total_space() / 1024 / 1024 / 1024; // convert to GB
-            let available_space = disk.available_space() / 1024 / 1024 / 1024;
-            let used_space = total_space - available_space;
-            let used_space_percent = if total_space > 0 {
-                (used_space as f64 / total_space as f64) * 100.0 // cast to f64 to get accurate percentage
-            } else {
-                0.0
-            };
+        // if not disabled by flag
+        if !config.no_disk {
+	        println!();
+	        println!("Disk Usage:");
+	        println!(
+	            "  {:<20} {:>10} {:>10} {:>8}",
+	            "Device", "Used", "Total", "Usage"
+	        );
+	        println!(
+	            "  {:<20} {:>10} {:>10} {:>8}",
+	            "------", "----", "-----", "-----"
+	        );
 
-            println!(
-                "  {:<20} {:>7} GB {:>7} GB {:>6.1}%",
-                name, used_space, total_space, used_space_percent
-            );
+	        for disk in sys.disks() {
+	            let name = disk.name().to_str().unwrap_or("Unknown");
+	            let total_space = disk.total_space() / 1024 / 1024 / 1024; // convert to GB
+	            let available_space = disk.available_space() / 1024 / 1024 / 1024;
+	            let used_space = total_space - available_space;
+	            let used_space_percent = if total_space > 0 {
+	                (used_space as f64 / total_space as f64) * 100.0 // cast to f64 to get accurate percentage
+	            } else {
+	                0.0
+	            };
+
+	            println!(
+	                "  {:<20} {:>7} GB {:>7} GB {:>6.1}%",
+	                name, used_space, total_space, used_space_percent
+	            );
+	        }
         }
 
-        println!();
-        println!("Network Usage:");
-        println!("  {:<15} {:>12} {:>12}", "Interface", "Received", "Sent");
-        println!("  {:<15} {:>12} {:>12}", "---------", "--------", "----");
-        for (name, data) in sys.networks() {
-            println!(
-                "  {:<15} {:>9} KB {:>9} KB",
-                name,
-                data.total_received() / 1024, // convert to KB, since MB is too large
-                data.total_transmitted() / 1024
-            );
-        }
+        // if not disabled by flag
+	    if !config.no_network {
+	        println!();
+	        println!("Network Usage:");
+	        println!("  {:<15} {:>12} {:>12}", "Interface", "Received", "Sent");
+	        println!("  {:<15} {:>12} {:>12}", "---------", "--------", "----");
+	        for (name, data) in sys.networks() {
+	            println!(
+	                "  {:<15} {:>9} KB {:>9} KB",
+	                name,
+	                data.total_received() / 1024, // convert to KB, since MB is too large
+	                data.total_transmitted() / 1024
+	            );
+	        }
+	    }
 
         println!();
         println!("Most Used (CPU):");
@@ -132,7 +139,7 @@ fn main() -> Result<()> {
         }
 
         stdout.flush()?;
-        // update every 1 second
-        thread::sleep(Duration::from_millis(100));
+        // update by interval, default 200 ms
+        thread::sleep(Duration::from_millis(config.interval));
     }
 }
