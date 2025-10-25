@@ -1,17 +1,28 @@
 use std::thread;
 use std::time::Duration;
+use crossterm::{
+	cursor::{MoveTo, Hide, Show},
+	execute,
+	terminal::{Clear, ClearType},
+}
 use sysinfo::{CpuExt, DiskExt, NetworkExt, ProcessExt, System, SystemExt};
 
 fn main() {
     let mut sys = System::new_all();
+    let mut stdout = stdout();
+
+    // hide cursor and clear screen
+    execute!(stdout, Hide, Clear(ClearType::All))?;
 
     // infinite loop to allow realtime updates
     loop {
-        print!("\x1B[2J\x1B[1;1H");
         sys.refresh_all();
 
+        // move cursor to start
+        execute!(stdout, MoveTo(0,0))?; // ? used to throw an error
+
         println!("Monitor Running...");
-        println!();
+        println!("\r"); // ensure full overwrite of previous line
 
         // format usage to one decimal place
         println!("CPU Usage: {:.1}%", sys.global_cpu_info().cpu_usage());
@@ -78,7 +89,11 @@ fn main() {
             );
         }
 
+        stdout.flush()?;
         // update every 1 second
         thread::sleep(Duration::from_secs(1));
     }
+
+    execute!(stdout, Show)?; // show cursor again when we exit
+    Ok(())
 }
