@@ -5,6 +5,7 @@ use crossterm::{
 	execute,
 	terminal::{Clear, ClearType},
 }
+use std::io::{stdout, Write};
 use sysinfo::{CpuExt, DiskExt, NetworkExt, ProcessExt, System, SystemExt};
 
 fn main() {
