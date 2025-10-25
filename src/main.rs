@@ -67,7 +67,7 @@ impl HistoryTracker {
             return None;
         }
         let sum: f32 = self.data.iter().map(|x| x.cpu_usage).sum();
-        return Some(sum / self.data.len() as f32)
+        return Some(sum / self.data.len() as f32);
     }
 
     // max cpu usage over runtime
@@ -75,7 +75,7 @@ impl HistoryTracker {
         self.data
             .iter()
             .map(|x| x.cpu_usage)
-            .max_by(|a, b| a.partial_cmp(b).unwrap());
+            .max_by(|a, b| a.partial_cmp(b).unwrap())
     }
 
     // average memory usage over runtime
@@ -84,49 +84,52 @@ impl HistoryTracker {
             // no average without data
             return None;
         }
-        let sum: f64 = self.data.iter().map(|x|) x.mem_percent_usage).sum();
+        let sum: f64 = self.data.iter().map(|x| x.mem_percent_usage).sum();
         return Some(sum / self.data.len() as f64);
     }
 
     // max memory usage over runtime
     fn mem_max(&self) -> Option<f64> {
-    	self.data.iter().map(|x| x.mem_percent_usage).max_by(|a, b| a.partial_cmp(b).unwrap());
+        self.data
+            .iter()
+            .map(|x| x.mem_percent_usage)
+            .max_by(|a, b| a.partial_cmp(b).unwrap())
     }
 
     // shows if cpu usage is increasing or decreasing
     fn cpu_trend(&self) -> String {
-	    if self.data.len() < 2 {
-	    	return "".to_string();
-	    }
+        if self.data.len() < 2 {
+            return "".to_string();
+        }
 
-		let curr = self.data.back().unwrap().cpu_usage;
-		let prev = self.data[self.data.len() - 2].cpu_usage;
+        let curr = self.data.back().unwrap().cpu_usage;
+        let prev = self.data[self.data.len() - 2].cpu_usage;
 
-		if curr > prev + 1.0 {
-			return "↗".to_string();
-		} else if curr < prev - 1.0 {
-			return "↘".to_string();
-		} else {
-			return "→".to_string();
-		}
+        if curr > prev + 1.0 {
+            return "↗".to_string();
+        } else if curr < prev - 1.0 {
+            return "↘".to_string();
+        } else {
+            return "→".to_string();
+        }
     }
 
     // shows if memory usage is increasing or decreasing
     fn mem_trend(&self) -> String {
-	    if self.data.len() < 2 {
-	    	return "".to_string();
-	    }
+        if self.data.len() < 2 {
+            return "".to_string();
+        }
 
-		let curr = self.data.back().unwrap().mem_percent_usage;
-		let prev = self.data[self.data.len() - 2].mem_percent_usage;
+        let curr = self.data.back().unwrap().mem_percent_usage;
+        let prev = self.data[self.data.len() - 2].mem_percent_usage;
 
-		if curr > prev + 1.0 {
-			return "↗".to_string();
-		} else if curr < prev - 1.0 {
-			return "↘".to_string();
-		} else {
-			return "→".to_string();
-		}
+        if curr > prev + 1.0 {
+            return "↗".to_string();
+        } else if curr < prev - 1.0 {
+            return "↘".to_string();
+        } else {
+            return "→".to_string();
+        }
     }
 }
 
@@ -153,9 +156,9 @@ fn main() -> Result<()> {
         let total_mem = sys.total_memory() / 1024 / 1024;
         let mem_percent_usage = (current_mem_usage as f64 / total_mem as f64) * 100.0;
 
-        let history = History {
+        let data = History {
             cpu_usage: current_cpu_usage,
-            mem_usage: current_mem_usage,
+            mem_used_mb: current_mem_usage,
             mem_percent_usage: mem_percent_usage,
         };
         history.add(data);
@@ -163,37 +166,32 @@ fn main() -> Result<()> {
         println!("--- SYSTEM MONITOR RUNNING ---");
         println!("\r"); // ensure full overwrite of previous line
 
-
         // format usage to one decimal place
-        println!(
-            "  CPU Usage:    {:>6.1}%, {}",
-            sys.global_cpu_info().cpu_usage(),
-            cpu_trend,
-        );
         if history.data.len() > 0 {
-        	let cpu_trend = history.cpu_trend();
-        	let cpu_avg = history.cpu_avg().unwrap_or(0.0);
-        	let cpu_max = history.cpu_max().unwrap_or(0.0);
-         	println!("avg: {:.1}%, peak: {:.1}%)",
-	            cpu_avg,
-	            cpu_max);
+            let cpu_trend = history.cpu_trend();
+            let cpu_avg = history.cpu_avg().unwrap_or(0.0);
+            let cpu_max = history.cpu_max().unwrap_or(0.0);
+            println!(
+                "  CPU Usage:    {:>6.1}%, {}",
+                sys.global_cpu_info().cpu_usage(),
+                cpu_trend,
+            );
+            println!("avg: {:.1}%, peak: {:.1}%)", cpu_avg, cpu_max);
         }
 
         let used_mem = sys.used_memory() / 1024 / 1024;
         let total_mem = sys.total_memory() / 1024 / 1024;
         // cast memory to float to calculate percentage accurately
         let mem_used_percent = (used_mem as f64 / total_mem as f64) * 100.0; // has to be 100.0, cannot multiply f64 by int
-       	let mem_trend = history.mem_trend();
+        let mem_trend = history.mem_trend();
         println!(
             "  Memory Usage:       {:>6} MB / {:>6} MB ({:>5.1}%), {}",
             used_mem, total_mem, mem_used_percent, mem_trend
         );
 
-       	let mem_avg = history.mem_avg().unwrap_or(0.0);
-       	let mem_max = history.mem_max().unwrap_or(0.0);
-       	println!("avg: {:.1}%, peak: {:.1}%)",
-      		mem_avg,
-            mem_max);
+        let mem_avg = history.mem_avg().unwrap_or(0.0);
+        let mem_max = history.mem_max().unwrap_or(0.0);
+        println!("avg: {:.1}%, peak: {:.1}%)", mem_avg, mem_max);
 
         // if not disabled by flag
         if !config.no_disk {
