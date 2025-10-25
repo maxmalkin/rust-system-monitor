@@ -54,7 +54,7 @@ impl HistoryTracker {
     // mutable to be able to update instance of self
     fn add(&mut self, data: History) {
         // if data is full, pop oldest entry
-        if (self.data.len() >= self.max_size) {
+        if self.data.len() >= self.max_size {
             self.data.pop_front();
         }
         self.data.push_back(data);
