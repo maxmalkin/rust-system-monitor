@@ -1,28 +1,42 @@
 # Rust System Monitor
 
-A basic system monitor in Rust, as a project to learn system level programming and realtime programming.
+Terminal-based system monitor with live metrics and historical tracking.
 
-- `sysinfo` package to fetch system info.
-- `std::thread` and `Duration` to manage realtime updates and threads.
-- `crossterm` for terminal cursor positioning.
-- `std::io` for input and output safety.
-- `clap` for CLI arg parsing.
+## Features
+
+- Real-time CPU/memory usage with trend indicators
+- Disk and network I/O statistics
+- Top 5 processes by CPU usage
+- Rolling averages and peaks (last 10 data points)
 
 ## Usage
 
-1. Clone the repo.
-2. Run using `cargo run`.
-
-## Options
-
 ```bash
-# Update interval in milliseconds
-cargo run -- --interval [interval]
+cargo run                          # 200ms updates (default)
+cargo run -- --interval 1000       # custom interval
+cargo run -- --no-disk             # hide disk stats
+cargo run -- --no-network          # hide network stats
+```
 
-# Do not show disk info
-cargo run -- --no-disk
-
-# Do not show network info
-cargo run -- --no-network
+## Architecture
 
 ```
+src/
+├── main.rs       - main loop orchestration
+├── config.rs     - CLI argument parsing
+├── monitor.rs    - system data collection
+├── history.rs    - ring buffer for trend tracking
+└── display.rs    - terminal rendering
+```
+
+**Key patterns:**
+- Ring buffer (VecDeque) pre-allocated at startup to avoid mid-loop allocations
+- Cursor repositioning instead of screen clearing for flicker-free updates
+- Buffered stdout with manual flush control
+
+## Stack
+
+- **sysinfo** - cross-platform system information
+- **crossterm** - terminal manipulation
+- **clap** - CLI parsing
+- **VecDeque** - ring buffer (stdlib)
