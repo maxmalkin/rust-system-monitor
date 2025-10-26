@@ -27,6 +27,7 @@ src/
 ├── monitor.rs    - system data collection
 ├── history.rs    - ring buffer for trend tracking
 └── display.rs    - terminal rendering
+└── rates.rs      - read/write rate calculation for disks and send/receive for networks
 ```
 
 **Key patterns:**
