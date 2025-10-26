@@ -2,7 +2,6 @@ use std::io::{Write, Result};
 use sysinfo::{System, SystemExt, DiskExt, ProcessExt};
 use crossterm::style::{Color, SetForegroundColor, ResetColor};
 use crossterm::execute;
-use crate::config::Config;
 use crate::history::HistoryTracker;
 use crate::monitor::SystemData;
 
